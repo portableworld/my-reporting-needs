@@ -1,4 +1,11 @@
 #################
+## Ruby Mine
+#################
+.idea/
+classes/sharepoint/
+classes/zip/
+
+#################
 ## Eclipse
 #################
 
