@@ -79,8 +79,8 @@ class ResultDocumenter
   def save_to_excel
     # Find Excel file based on @report_name
     begin
-      stats_folder = File.join('Q:', 'Post_Close', 'MIS', 'Daily Reporting', 'Unit Control', 'Daily Reports', 'Statistics')
-    rescue WIN32OLERuntimeError => e
+      stats_folder = File.join('path', 'to', 'statistics', 'folder')
+    rescue WIN32OLERuntimeError => e # TODO - I think this was moved to the Excel class. Check and remove
         if e.message =~ /failed to create WIN32OLE object/
           puts 'Failed to create Excel.Application object'
           puts 'The Statistics Template is probably already in use'
@@ -91,6 +91,7 @@ class ResultDocumenter
           raise
         end
     end
+    # TODO - The Excel class should be the one that creates a new file if it doesn't exist
     if File.exists?(File.join(stats_folder, "Stats for #{@report_name}.xls"))
       # Open Excel file
       xl = Excel.new(File.join(stats_folder, "Stats for #{@report_name}.xls"))
@@ -102,7 +103,7 @@ class ResultDocumenter
     end
     xl.sheet('Data')
     # Find next insertion point
-    next_blank_cell = xl.get_next_blank_cell_address('A2', 'down')
+    next_blank_cell = xl.get_next_blank_cell_address('A2', :down)
     xl.insert_array([@date_ran, date_range, @count, elapsed_minutes, elapsed_hours], next_blank_cell)
 
     xl.save
