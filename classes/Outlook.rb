@@ -48,6 +48,19 @@ class Outlook
       @recipients += addresses
     end
   end
+  
+  def cc(addresses)
+    # Pipe into #to method for the moment
+    warn %q{Method not fully implemented. Adding email addresses to 'to' line}
+    to(addresses)
+  end
+  
+  def bcc(addresses)
+    # Pipe into #to method for the moment
+    warn %q{Method not fully implemented. Adding email addresses to 'to' line.
+    Email addresses will be visible to all recipients!}
+    to(addresses)
+  end
 
   def format=(message_format)
     message_format = message_format.downcase.to_sym if message_format.respond_to? :downcase
@@ -80,7 +93,7 @@ class Outlook
     @email = @outlook.Createitem(MAIL_ITEM)
     @email.Subject    = @subject
     @email.BodyFormat = @format
-    @body += "\n\n#@signature" # TODO - The \n\n will not transpose to HTML properly yet
+    @body += "\n\n#@{signature}" # TODO - The \n\n will not transpose to HTML properly yet
     attach_body
     attach_files
     attach_addresses
