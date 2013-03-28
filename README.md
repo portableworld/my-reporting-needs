@@ -10,6 +10,7 @@ I am currently working at CitiMortgage (I have nothing to do with loans so don't
 Since we run Windows computers, I have used the `win32ole` library included with the Windows install of Ruby MRI to make connections to the Microsoft Office applications used in my reporting. `Database.rb` makes a connection to either an Access database or an Oracle database. Once the data is acquired, it is inserted into Excel using `Excel.rb`. From there, I use a third-party zip library to zip up the spreadsheet. I'll then email out the report using `Outlook.rb`. This is all tied together using `Report.rb` (not yet pushed to Github due to sensitive details about our company's system that still need to be cleaned up out of the class). 
 
 Once the `Report` class is in place, running a report is as simple as
+
     require 'report'
     
     report = Report.new do |r|
