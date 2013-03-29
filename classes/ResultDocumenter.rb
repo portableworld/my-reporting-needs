@@ -12,11 +12,11 @@ Example:
 require_relative 'Excel'
 
 class ResultDocumenter
-	attr_reader :report_name, :start_time, :end_time, :date_ran, :for_date_range
+  attr_reader :report_name, :start_time, :end_time, :date_ran, :for_date_range
   attr_accessor :count
 
   def initialize(report_name, date_range)
-		@report_name = report_name
+    @report_name = report_name
     @for_date_range = date_range
     @date_ran = Time.now.strftime('%m/%d/%Y')
   end
@@ -65,15 +65,15 @@ class ResultDocumenter
       puts e.message
       puts 'Continuing without documenting...'
     end
-	end
+  end
 
   private
 
   def all_valid?
     @report_name && @report_name.length > 0 &&
-        @start_time && @end_time &&
-        @start_time < @end_time &&
-        @count
+      @start_time && @end_time &&
+      @start_time < @end_time &&
+      @count
   end
 
   def save_to_excel
