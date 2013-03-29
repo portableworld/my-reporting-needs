@@ -1,6 +1,6 @@
 require_relative '../classes/sql'
 
-def example_report_sql(entry_date_array)
+def shadow_series_book_reviews_sql(entry_date_array)
 
   <<EOF
 SELECT books.title,
