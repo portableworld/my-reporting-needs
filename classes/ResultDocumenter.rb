@@ -15,7 +15,7 @@ class ResultDocumenter
 	attr_reader :report_name, :start_time, :end_time, :date_ran, :for_date_range
   attr_accessor :count
 
-	def initialize(report_name, date_range)
+  def initialize(report_name, date_range)
 		@report_name = report_name
     @for_date_range = date_range
     @date_ran = Time.now.strftime('%m/%d/%Y')
