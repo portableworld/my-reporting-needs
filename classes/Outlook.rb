@@ -1,10 +1,14 @@
 require 'win32ole'
-require 'active_support'
+require_relative 'active_support'
 
 class Outlook
 
   TEXT = 1
   HTML = 2
+
+  SEND_TO   = 1
+  SEND_CC   = 2
+  SEND_BCC  = 3
 
   MAIL_ITEM = 0
 
@@ -15,7 +19,7 @@ class Outlook
     puts
     puts 'Opening Outlook...'
     @outlook     = WIN32OLE.new('Outlook.Application')
-    @recipients  = Array.new
+    @recipients  = Hash.new
     @format      = TEXT
     @body        = ''
     # TODO - Put signature in an external YAML file
@@ -41,25 +45,16 @@ class Outlook
     @subject = subject_line
   end
 
-  def to(addresses)
-    if addresses.is_a? String
-      @recipients << addresses
-    elsif addresses.is_a? Array
-      @recipients += addresses
-    end
+  def to(*addresses)
+    add_recipient(addresses, SEND_TO)
   end
   
-  def cc(addresses)
-    # Pipe into #to method for the moment
-    warn %q{Method not fully implemented. Adding email addresses to 'to' line}
-    to(addresses)
+  def cc(*addresses)
+    add_recipient(addresses, SEND_CC)
   end
   
-  def bcc(addresses)
-    # Pipe into #to method for the moment
-    warn %q{Method not fully implemented. Adding email addresses to 'to' line.
-    Email addresses will be visible to all recipients!}
-    to(addresses)
+  def bcc(*addresses)
+    add_recipient(addresses, SEND_BCC)
   end
 
   def format=(message_format)
@@ -89,14 +84,15 @@ class Outlook
   alias :attach :attachments=
 
   def send
+    # Note that this overrides Object#send. Use Object#__send__ instead.
     puts 'Opening new email message...'
     @email = @outlook.Createitem(MAIL_ITEM)
     @email.Subject    = @subject
     @email.BodyFormat = @format
-    @body += "\n\n#@{signature}" # TODO - The \n\n will not transpose to HTML properly yet
+    @body += "\n\n#{@signature}" # TODO - The \n\n will not transpose to HTML properly yet
     attach_body
     attach_files
-    attach_addresses
+    attach_addresses # TODO - Move this into #to, #cc, and #bcc
     puts 'Sending email message...'
     @email.Send
     puts 'Done sending email'
@@ -104,6 +100,10 @@ class Outlook
 
   def me
     @ns.currentuser.name
+  end
+
+  def view_recipients(type = :all)
+    # TODO - Display list of recipients based on :to, :cc, :bcc, or :all
   end
 
   private
@@ -123,8 +123,23 @@ class Outlook
       raise ArgumentError, 'There must be at least one name or distribution list in ' +
             'the To, CC, or BCC fields.'
     else
-      @recipients.each {|addy| @email.Recipients.Add(addy)}
+      @recipients.each {|addy, type| @email.Recipients.Add(addy).type = type}
     end
+  end
+
+  def add_recipient(*addresses, type)
+    addresses.each do |address|
+      if address.is_a? String
+        # Note there is no validation to confirm the string is an email address
+        # TODO - Validation. Put the massive regex for email confirmation into a Module
+        @recipients[address] = type
+      elsif address.is_a? Array
+        add_recipient(*address, type)
+      else
+        raise 'Methods #to must take either a string or an array of strings.'
+      end
+    end
+
   end
 
   def attach_body
