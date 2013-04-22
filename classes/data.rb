@@ -5,7 +5,7 @@ class QueryData
 
   attr_accessor :fields, :data
 
-  delegate :size, :length, :count, to: :data
+  delegate :size, :length, :count, :find, :find_all, to: :data
 
   def initialize
     @fields = Array.new
