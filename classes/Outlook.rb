@@ -83,8 +83,12 @@ class Outlook
   end
   alias :attach :attachments=
 
-  def send
+  def send(*args)
     # Note that this overrides Object#send. Use Object#__send__ instead.
+    # Overriding Object#send is screwing up RSpec 'have' matcher
+    # The following is an attempt to capture Object#send attempts and pass it up the chain
+    return super unless args.empty?
+    
     puts 'Opening new email message...'
     @email = @outlook.Createitem(MAIL_ITEM)
     @email.Subject    = @subject
